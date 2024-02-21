@@ -23,9 +23,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    viewModel: LoginUiViewModel = viewModel()
+) {
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -33,26 +38,18 @@ fun LoginScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var userId by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var loginEnabled by remember { mutableStateOf(false) }
+        val uiState = viewModel.uiState
         TextField(
-            value = userId, // TODO 入力した文字列が表示されるようにする
-            onValueChange = { value ->
-                userId = value
-                loginEnabled = userId.length >= 4 && password.length >= 8
-            },
+            value = uiState.userId, // TODO 入力した文字列が表示されるようにする
+            onValueChange = viewModel::setUserId,
             modifier = Modifier.fillMaxWidth(),
             label = { Text(text = stringResource(R.string.user_id)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii)
         )
 
         TextField(
-            value = password, // TODO 入力した文字列が表示されるようにする
-            onValueChange = { value ->
-                password = value
-                loginEnabled = userId.length >= 4 && password.length >= 8
-            },
+            value = uiState.password, // TODO 入力した文字列が表示されるようにする
+            onValueChange = viewModel::setPassword,
             modifier = Modifier.fillMaxWidth(),
             label = { Text(text = stringResource(R.string.password)) },
             visualTransformation = PasswordVisualTransformation(),
@@ -62,7 +59,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
         Button(
             onClick = { },
             modifier = Modifier.fillMaxWidth(),
-            enabled = loginEnabled // TODO ユーザーIDが4文字以上、かつパスワードが8文字以上入力されたら押せるようにする
+            enabled = uiState.loginEnabled // TODO ユーザーIDが4文字以上、かつパスワードが8文字以上入力されたら押せるようにする
         ) {
             Text(text = stringResource(R.string.login))
         }
